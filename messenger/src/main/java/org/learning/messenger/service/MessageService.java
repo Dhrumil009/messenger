@@ -1,9 +1,11 @@
 package org.learning.messenger.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.learning.messenger.exception.DataNotFoundException;
 import org.learning.messenger.model.Message;
 
 public class MessageService {
@@ -31,7 +33,11 @@ public class MessageService {
 		if(Id <= 0) {
 			return null;
 		}
-		return messages.get(Id);
+		Message message=messages.get(Id);
+		if(message == null) {
+			throw new DataNotFoundException("message with id not found");
+		}
+		return message;
 	}
 	
 	public Message updateMessage(Message message) {
@@ -48,5 +54,27 @@ public class MessageService {
 		}
 		return messages.remove(Id);
 	}
+	
+	public List<Message> getMessageByYear(int year) {
+		List<Message> yearList=new ArrayList<>();
+		Calendar cal=Calendar.getInstance();
+		List<Message> msgList=getAllMessages();
+		for(Message msg:msgList) {
+			cal.setTime(msg.getCreated());
+			if(cal.get(Calendar.YEAR) == year) {
+				yearList.add(msg);
+			}
+		}
+		return yearList;
+	}
+	
+	public List<Message> getMessageByPage(int start,int size){
+		 List<Message> msgs= getAllMessages();
+		 if(msgs.size() < (start+size)) {
+			 return new ArrayList<>(); 		
+		}
+		 return  msgs.subList(start, start+size);
+	}
+
 
 }
