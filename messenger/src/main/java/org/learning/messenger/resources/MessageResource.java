@@ -46,8 +46,10 @@ public class MessageResource {
 	
 	@GET
 	@Path("/{messageId}")
-	public Message getMessage(@PathParam("messageId") long messageId) {
-		return service.getMessage(messageId);
+	public Message getMessage(@PathParam("messageId") long messageId, @Context UriInfo info) {
+		Message msg= service.getMessage(messageId);
+		msg.SetLink(info.getBaseUriBuilder().path(MessageResource.class).path(String.valueOf(msg.getId())).build().toString(), "self");
+		return msg;
 	}
 	
 //	@POST
@@ -91,6 +93,9 @@ public class MessageResource {
 	public CommentResource getCommentResource() {
 		return new CommentResource();
 	}
+	
+	
+	
 	
 	
 }
